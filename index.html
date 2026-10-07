@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Unitv — TV Nova Juarez</title>
+<style>
+  :root{
+    --bg-1:#070a18;
+    --bg-2:#0d1230;
+    --card:#141a3a;
+    --card-hover:#1c2450;
+    --accent:#00e0ff;
+    --accent-2:#7a3cff;
+    --accent-3:#ff2e93;
+    --txt:#ffffff;
+    --muted:#8a93c4;
+    --grad:linear-gradient(135deg,#00e0ff 0%,#7a3cff 60%,#ff2e93 100%);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;color:var(--txt);
+    font-family:system-ui,"Segoe UI",Roboto,sans-serif;overflow:hidden;
+    background:radial-gradient(circle at 20% 0%,#142054 0%,var(--bg-1) 55%,#000 100%);}
+
+  /* ============ SPLASH ============ */
+  #splash{position:fixed;inset:0;z-index:999;
+    background:radial-gradient(circle at 50% 30%,#152a5e 0%,#05071a 70%);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    transition:opacity .7s ease;}
+  #splash .logo{
+    font-size:clamp(44px,11vw,110px);font-weight:900;letter-spacing:8px;
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;
+    color:transparent;filter:drop-shadow(0 0 40px rgba(0,224,255,.5));
+    animation:pulse 2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+  #splash p{margin-top:18px;opacity:.9;text-align:center;padding:0 22px;
+    font-size:clamp(12px,3vw,17px);line-height:1.6;}
+  #splash p strong{color:var(--accent);}
+  .loader{margin-top:30px;width:54px;height:54px;border-radius:50%;
+    border:4px solid rgba(255,255,255,.12);border-top-color:var(--accent);
+    border-right-color:var(--accent-2);animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ============ APP ============ */
+  #app{display:none;height:100%;}
+  #app.show{display:flex;flex-direction:column;}
+
+  header{display:flex;align-items:center;justify-content:space-between;
+    padding:14px 26px;background:rgba(10,14,35,.75);backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(122,60,255,.25);}
+  header .brand{
+    font-size:24px;font-weight:900;letter-spacing:5px;
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;
+    color:transparent;}
+  header .agora{font-size:13px;color:var(--muted);}
+
+  /* ============ HOME ============ */
+  #home{flex:1;overflow-y:auto;padding:24px 26px 40px;}
+  .section-title{font-size:13px;color:var(--muted);letter-spacing:3px;
+    text-transform:uppercase;margin:8px 0 14px;font-weight:600;}
+
+  /* Banner carrossel */
+  .destaque{position:relative;height:clamp(190px,36vh,340px);border-radius:20px;
+    overflow:hidden;background:#0b0f2a;margin-bottom:30px;
+    border:1px solid rgba(122,60,255,.35);
+    box-shadow:0 20px 60px -20px rgba(122,60,255,.55);}
+  .destaque .slide{position:absolute;inset:0;opacity:0;transition:opacity 1.1s ease;
+    display:flex;align-items:flex-end;padding:26px;background-size:cover;
+    background-position:center;}
+  .destaque .slide.ativo{opacity:1;}
+  .destaque .slide::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(to top,rgba(0,0,0,.9) 0%,rgba(0,0,0,.15) 60%,transparent 100%);}
+  .destaque .slide h3{position:relative;z-index:2;margin:0;
+    font-size:clamp(18px,2.8vw,32px);font-weight:800;
+    text-shadow:0 3px 14px #000;}
+  .destaque .dots{position:absolute;bottom:14px;right:20px;display:flex;gap:8px;z-index:3;}
+  .destaque .dots span{width:8px;height:8px;border-radius:50%;
+    background:rgba(255,255,255,.35);transition:.3s;}
+  .destaque .dots span.on{background:var(--accent);width:24px;border-radius:4px;}
+
+  /* Grade de quadros */
+  .grid{display:grid;gap:18px;
+    grid-template-columns:repeat(auto-fill,minmax(190px,1fr));}
+  .quadro{position:relative;border-radius:18px;padding:24px 22px;cursor:pointer;
+    display:flex;flex-direction:column;justify-content:flex-end;min-height:170px;
+    overflow:hidden;transition:.28s;border:1px solid rgba(255,255,255,.06);
+    box-shadow:0 12px 34px -16px rgba(0,0,0,.9);}
+  .quadro::before{content:"";position:absolute;inset:0;opacity:.95;z-index:0;
+    background:var(--bgcard);}
+  .quadro::after{content:"";position:absolute;inset:0;z-index:1;
+    background:radial-gradient(circle at 80% -20%,rgba(255,255,255,.35) 0%,transparent 55%);}
+  .quadro:hover{transform:translateY(-5px);border-color:rgba(0,224,255,.55);
+    box-shadow:0 22px 50px -18px var(--accent);}
+  .quadro .icone{position:relative;z-index:2;font-size:40px;margin-bottom:auto;}
+  .quadro .titulo{position:relative;z-index:2;font-size:20px;font-weight:800;
+    letter-spacing:.5px;text-shadow:0 2px 8px rgba(0,0,0,.5);}
+  .quadro .sub{position:relative;z-index:2;font-size:12px;opacity:.85;margin-top:4px;}
+
+  .q-canais   {--bgcard:linear-gradient(135deg,#00c2ff 0%,#0066ff 100%);}
+  .q-filmes   {--bgcard:linear-gradient(135deg,#ff2e93 0%,#7a3cff 100%);}
+  .q-series   {--bgcard:linear-gradient(135deg,#7a3cff 0%,#3a0dff 100%);}
+  .q-jogos    {--bgcard:linear-gradient(135deg,#00e08a 0%,#00a3ff 100%);}
+  .q-desenhos {--bgcard:linear-gradient(135deg,#ffb800 0%,#ff5c00 100%);}
+
+  /* ============ PASTA ============ */
+  #pasta{display:none;flex:1;overflow-y:auto;padding:24px 26px 40px;}
+  #pasta.show{display:block;}
+  .voltar{display:inline-flex;align-items:center;gap:8px;
+    background:rgba(122,60,255,.18);color:var(--txt);border:1px solid rgba(122,60,255,.5);
+    padding:10px 18px;border-radius:12px;cursor:pointer;font-size:14px;
+    margin-bottom:22px;font-weight:600;transition:.2s;}
+  .voltar:hover{background:rgba(122,60,255,.35);}
+
+  .lista{display:grid;gap:12px;
+    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));}
+  .linha{background:linear-gradient(135deg,rgba(20,26,58,.95),rgba(13,18,48,.95));
+    border:1px solid rgba(122,60,255,.25);padding:16px 18px;border-radius:14px;
+    cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+    font-size:15px;transition:.2s;}
+  .linha:hover{background:var(--card-hover);border-color:var(--accent);
+    transform:translateY(-2px);}
+  .linha.active{background:var(--grad);color:#001018;font-weight:700;border-color:transparent;}
+  .linha .play{opacity:.8;font-size:13px;}
+
+  /* ============ PLAYER ============ */
+  #playerWrap{display:none;flex:1;position:relative;background:#000;overflow:hidden;}
+  #playerWrap.show{display:flex;align-items:center;justify-content:center;}
+  video{width:100%;height:100%;object-fit:contain;background:#000;
+    transition:transform .25s ease;transform-origin:center center;}
+  video.zoom{transform:scale(1.6);}
+  .hint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+    background:rgba(0,0,0,.6);padding:8px 16px;border-radius:22px;font-size:12px;
+    opacity:.85;pointer-events:none;white-space:nowrap;
+    border:1px solid rgba(0,224,255,.35);}
+  .fecharPlayer{position:absolute;top:16px;right:18px;background:rgba(122,60,255,.75);
+    border:none;color:#fff;padding:9px 16px;border-radius:22px;cursor:pointer;
+    font-size:13px;font-weight:600;}
+  .fecharPlayer:hover{background:var(--accent-3);}
+
+  @media (min-width:1280px){
+    .grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr));}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= SPLASH ================= -->
+<div id="splash">
+  <div class="logo">UNITV</div>
+  <p>Você está instalando <strong>Unitv</strong><br>
+     um aplicativo criado pela <strong>TV Nova Juarez</strong></p>
+  <div class="loader"></div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app">
+
+  <header>
+    <div class="brand">UNITV</div>
+    <div class="agora" id="agora">TV Nova Juarez</div>
+  </header>
+
+  <!-- TELA INICIAL -->
+  <section id="home">
+
+    <div class="section-title">🔥 Lançamentos do ano</div>
+    <div class="destaque" id="destaque">
+      <div class="dots" id="dots"></div>
+    </div>
+
+    <div class="section-title">📁 Categorias</div>
+    <div class="grid">
+      <div class="quadro q-canais" data-pasta="canais">
+        <div class="icone">📺</div>
+        <div class="titulo">Canais</div>
+        <div class="sub">Ao vivo</div>
+      </div>
+      <div class="quadro q-filmes" data-pasta="filmes">
+        <div class="icone">🎬</div>
+        <div class="titulo">Filmes</div>
+        <div class="sub">Catálogo</div>
+      </div>
+      <div class="quadro q-series" data-pasta="series">
+        <div class="icone">🎞️</div>
+        <div class="titulo">Séries</div>
+        <div class="sub">Episódios</div>
+      </div>
+      <div class="quadro q-jogos" data-pasta="jogos">
+        <div class="icone">🎮</div>
+        <div class="titulo">Jogos</div>
+        <div class="sub">Gameplay</div>
+      </div>
+      <div class="quadro q-desenhos" data-pasta="desenhos">
+        <div class="icone">🧸</div>
+        <div class="titulo">Desenhos</div>
+        <div class="sub">Infantil</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PASTA -->
+  <section id="pasta">
+    <button class="voltar" id="btnVoltar">← Voltar</button>
+    <div class="section-title" id="tituloPasta">Canais</div>
+    <div class="lista" id="listaConteudo"></div>
+  </section>
+
+  <!-- PLAYER -->
+  <section id="playerWrap">
+    <video id="player" controls playsinline></video>
+    <div class="hint">Toque duas vezes no vídeo para dar zoom</div>
+    <button class="fecharPlayer" id="fecharPlayer">✕ Fechar</button>
+  </section>
+
+</div>
+
+<script>
+/* ======================================================
+   CONTEÚDO — edite os arrays
+   ====================================================== */
+const DADOS = {
+  canais: [
+    { nome: "TV Nova Juarez", url: "https://stmv2.webtvninjas.com.br/tvnovajuarez/tvnovajuarez/playlist.m3u8" },
+  ],
+  filmes: [],
+  series: [],
+  jogos: [],
+  desenhos: []
+};
+
+const LANCAMENTOS = [
+  { nome: "TV Nova Juarez — Ao Vivo", imagem: "https://picsum.photos/seed/unitv1/1600/900" },
+  { nome: "Lançamento do Ano",       imagem: "https://picsum.photos/seed/unitv2/1600/900" },
+  { nome: "Estreia Exclusiva",       imagem: "https://picsum.photos/seed/unitv3/1600/900" }
+];
+
+const NOMES = {canais:"Canais",filmes:"Filmes",series:"Séries",jogos:"Jogos",desenhos:"Desenhos"};
+
+/* ====================================================== */
+const splash=document.getElementById('splash'),app=document.getElementById('app'),
+      home=document.getElementById('home'),pastaSec=document.getElementById('pasta'),
+      playerWrap=document.getElementById('playerWrap'),player=document.getElementById('player'),
+      agora=document.getElementById('agora'),listaEl=document.getElementById('listaConteudo'),
+      tituloPasta=document.getElementById('tituloPasta'),destaque=document.getElementById('destaque'),
+      dots=document.getElementById('dots');
+
+let slideAtual=0;
+function montarDestaque(){
+  destaque.querySelectorAll('.slide').forEach(s=>s.remove());
+  dots.innerHTML='';
+  LANCAMENTOS.forEach((l,i)=>{
+    const s=document.createElement('div');
+    s.className='slide'+(i===0?' ativo':'');
+    s.style.backgroundImage=`url('${l.imagem}')`;
+    s.innerHTML=`<h3>${l.nome}</h3>`;
+    destaque.appendChild(s);
+    const d=document.createElement('span'); if(i===0)d.className='on'; dots.appendChild(d);
+  });
+  setInterval(()=>{
+    const slides=destaque.querySelectorAll('.slide');
+    const ds=dots.querySelectorAll('span');
+    if(!slides.length)return;
+    slides[slideAtual].classList.remove('ativo'); ds[slideAtual].classList.remove('on');
+    slideAtual=(slideAtual+1)%slides.length;
+    slides[slideAtual].classList.add('ativo'); ds[slideAtual].classList.add('on');
+  },4000);
+}
+
+function abrirPasta(chave){
+  tituloPasta.textContent=NOMES[chave]||chave;
+  listaEl.innerHTML='';
+  const itens=DADOS[chave]||[];
+  if(!itens.length){
+    const v=document.createElement('div');
+    v.className='linha'; v.style.opacity='.5'; v.textContent='Nenhum item ainda';
+    listaEl.appendChild(v);
+  }else{
+    itens.forEach(item=>{
+      const d=document.createElement('div');
+      d.className='linha';
+      d.innerHTML=`<span>${item.nome}</span><span class="play">▶</span>`;
+      d.onclick=()=>tocar(item,d);
+      listaEl.appendChild(d);
+    });
+  }
+  home.style.display='none'; pastaSec.classList.add('show');
+  playerWrap.classList.remove('show');
+}
+
+document.getElementById('btnVoltar').onclick=()=>{
+  pastaSec.classList.remove('show'); playerWrap.classList.remove('show');
+  player.pause(); player.removeAttribute('src'); player.load();
+  home.style.display='block';
+};
+
+function tocar(item,el){
+  listaEl.querySelectorAll('.linha').forEach(i=>i.classList.remove('active'));
+  if(el)el.classList.add('active');
+  player.src=item.url; player.classList.add('zoom');
+  player.play().catch(()=>{});
+  agora.textContent=item.nome;
+  home.style.display='none'; pastaSec.classList.remove('show');
+  playerWrap.classList.add('show');
+}
+
+let lastTap=0;
+player.addEventListener('click',()=>{
+  const now=Date.now();
+  if(now-lastTap<300)player.classList.toggle('zoom');
+  lastTap=now;
+});
+
+document.getElementById('fecharPlayer').onclick=()=>{
+  player.pause(); player.removeAttribute('src'); player.load();
+  playerWrap.classList.remove('show'); pastaSec.classList.add('show');
+};
+
+document.querySelectorAll('.quadro').forEach(q=>{
+  q.onclick=()=>abrirPasta(q.dataset.pasta);
+});
+
+window.addEventListener('load',()=>{
+  montarDestaque();
+  setTimeout(()=>{
+    splash.style.opacity='0';
+    setTimeout(()=>{
+      splash.style.display='none'; app.classList.add('show');
+    },700);
+  },2600);
+});
+</script>
+</body>
+</html>
