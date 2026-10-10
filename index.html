@@ -152,12 +152,10 @@
   .card .nome .play{opacity:.7;font-size:12px;color:var(--accent);}
   .card .dono{padding:0 12px 12px;font-size:11px;color:var(--muted);}
 
-  /* ============ PLAYER ============ */
   #playerWrap{display:none;flex:1;background:#000;overflow:hidden;
     flex-direction:column;}
   #playerWrap.show{display:flex;}
 
-  /* área do vídeo: fixa em 16:9 centralizado */
   .videoArea{flex:1;background:#000;position:relative;
     display:flex;align-items:center;justify-content:center;overflow:hidden;}
   .frame{position:relative;background:#000;transition:.3s ease;
@@ -166,22 +164,25 @@
     transition:transform .25s ease;transform-origin:center center;}
   video.zoom{transform:scale(1.6);}
 
-  /* formas do frame por plataforma */
   .frame[data-forma="youtube"]   {aspect-ratio:16/9; width:min(100%,calc((100vh - 260px) * 16 / 9)); height:auto;}
   .frame[data-forma="instagram"] {aspect-ratio:1/1;  width:min(100%,calc(100vh - 260px));              height:auto;}
   .frame[data-forma="tiktok"]    {aspect-ratio:9/16; height:min(100%,calc(100vh - 260px));            width:auto;}
   .frame[data-forma="kwai"]      {aspect-ratio:9/16; height:min(100%,calc(100vh - 260px));            width:auto;}
   .frame[data-forma="facebook"]  {aspect-ratio:4/5;  height:min(100%,calc(100vh - 260px));            width:auto;}
-  /* Em celular, respeita a tela toda */
-  @media (max-aspect-ratio:1/1){
-    .frame[data-forma="youtube"]   {width:100%;height:auto;}
-    .frame[data-forma="instagram"] {width:100%;height:auto;}
-    .frame[data-forma="tiktok"],
-    .frame[data-forma="kwai"],
-    .frame[data-forma="facebook"]  {height:100%;width:auto;}
+
+  @media (orientation: landscape) and (max-height: 600px){
+    .frame[data-forma="youtube"]   {width:100%;height:auto;max-height:calc(100vh - 140px);}
+    body.modo-celular header{flex-wrap:nowrap;}
+    body.modo-celular header .busca{order:0;flex:1;max-width:400px;}
+    .barraFormatos, .barraShare{padding:6px 10px;}
+    .fmtBtn{min-width:60px;padding:6px 10px;font-size:10px;}
+    .fmtBtn .fIco{font-size:16px;}
+    .shBtn{padding:6px 10px;font-size:11px;}
+  }
+  @media (orientation: portrait){
+    .frame[data-forma="youtube"]{width:100%;height:auto;}
   }
 
-  /* Controles sobrepostos - aparecem com toque */
   .ctrl{opacity:0;pointer-events:none;transition:opacity .3s ease;}
   #playerWrap.mostrarControles .ctrl{opacity:1;pointer-events:auto;}
 
@@ -201,7 +202,6 @@
   .navPlayer.prev{left:14px;}
   .navPlayer.next{right:14px;}
 
-  /* ============ BARRA DE FORMATOS ============ */
   .barraFormatos{display:flex;gap:8px;overflow-x:auto;padding:10px 14px;
     background:rgba(10,14,35,.85);border-top:1px solid rgba(122,60,255,.25);
     scrollbar-width:none;}
@@ -214,7 +214,6 @@
   .fmtBtn:hover{background:rgba(0,224,255,.15);}
   .fmtBtn.on{background:var(--grad);color:#001018;border-color:transparent;}
 
-  /* ============ BARRA DE COMPARTILHAR ============ */
   .barraShare{display:flex;gap:8px;overflow-x:auto;padding:10px 14px 14px;
     background:rgba(10,14,35,.85);border-top:1px solid rgba(122,60,255,.15);
     scrollbar-width:none;}
@@ -307,8 +306,8 @@
     <div class="section-title">📁 Categorias</div>
     <div class="grid">
       <div class="quadro q-canaisweb" data-pasta="canaisweb"><div class="icone">🌐</div><div class="titulo">Canais Web</div><div class="sub">TV Nova Juarez · Ninja Host</div></div>
-      <div class="quadro q-canais"    data-pasta="canais"><div class="icone">📺</div><div class="titulo">Canais</div><div class="sub">Ao vivo</div></div>
-      <div class="quadro q-filmes"    data-pasta="filmes"><div class="icone">🎬</div><div class="titulo">Filmes</div><div class="sub">Catálogo</div></div>
+      <div class="quadro q-canais"    data-pasta="canais"><div class="icone">📺</div><div class="titulo">Canais</div><div class="sub">Públicos oficiais</div></div>
+      <div class="quadro q-filmes"    data-pasta="filmes"><div class="icone">🎬</div><div class="titulo">Filmes</div><div class="sub">Domínio público</div></div>
       <div class="quadro q-series"    data-pasta="series"><div class="icone">🎞️</div><div class="titulo">Séries</div><div class="sub">Episódios</div></div>
       <div class="quadro q-jogos"     data-pasta="jogos"><div class="icone">🎮</div><div class="titulo">Jogos</div><div class="sub">Gameplay</div></div>
       <div class="quadro q-desenhos"  data-pasta="desenhos"><div class="icone">🧸</div><div class="titulo">Desenhos</div><div class="sub">Infantil</div></div>
@@ -319,7 +318,7 @@
   <section id="pasta">
     <button class="voltar" id="btnVoltar">← Voltar</button>
     <div class="subtabs" id="subtabs"></div>
-    <div class="section-title" id="tituloPasta">Canais Web</div>
+    <div class="section-title" id="tituloPasta">Canais</div>
     <div class="grade" id="grade"></div>
   </section>
 
@@ -328,13 +327,12 @@
       <div class="frame" data-forma="youtube" id="frame">
         <video id="player" controls playsinline></video>
       </div>
-      <button class="navPlayer prev ctrl" id="canalPrev" title="Canal anterior">⏮</button>
-      <button class="navPlayer next ctrl" id="canalNext" title="Próximo canal">⏭</button>
+      <button class="navPlayer prev ctrl" id="canalPrev" title="Anterior">⏮</button>
+      <button class="navPlayer next ctrl" id="canalNext" title="Próximo">⏭</button>
       <div class="hint ctrl">Toque duas vezes no vídeo para dar zoom</div>
       <button class="fecharPlayer ctrl" id="fecharPlayer">✕ Fechar</button>
     </div>
 
-    <!-- Barra de formatos de tela -->
     <div class="barraFormatos">
       <div class="fmtBtn on" data-forma="youtube"><span class="fIco">▶️</span>YouTube 16:9</div>
       <div class="fmtBtn"    data-forma="instagram"><span class="fIco">📷</span>Instagram 1:1</div>
@@ -343,7 +341,6 @@
       <div class="fmtBtn"    data-forma="facebook"><span class="fIco">📘</span>Facebook 4:5</div>
     </div>
 
-    <!-- Barra de compartilhar -->
     <div class="barraShare">
       <button class="shBtn shWhats" id="shWhats"><span>🟢</span>WhatsApp</button>
       <button class="shBtn shFace"  id="shFace"><span>📘</span>Facebook</button>
@@ -368,7 +365,7 @@
 
 <script>
 /* ================================================================
-   CONTEÚDO
+   CONTEÚDO — canais públicos oficiais + filmes de domínio público
    ================================================================ */
 const DADOS = {
   canaisweb: {
@@ -388,21 +385,128 @@ const DADOS = {
     ]
   },
   canais: {
-    "Meu canal": [
-      { nome:"TV Nova Juarez", url:"https://stmv2.webtvninjas.com.br/tvnovajuarez/tvnovajuarez/playlist.m3u8" }
+    "📺 Públicos": [
+      {
+        nome: "TV Câmara",
+        url:  "https://stream3.camara.gov.br/tv1/manifest.m3u8",
+        capa: "https://picsum.photos/seed/tvcamara/400/300",
+        dono: "Público — Legislativo"
+      },
+      {
+        nome: "TV Senado",
+        url:  "https://stream1.freetv.fun/tv-senado-1.m3u8",
+        capa: "https://picsum.photos/seed/tvsenado/400/300",
+        dono: "Público — Legislativo"
+      },
+      {
+        nome: "TV Justiça",
+        url:  "https://live-scjn.ovp-vivaro.digital/ovp-origin/638a22b47746d/playlist.m3u8",
+        capa: "https://picsum.photos/seed/tvjustica/400/300",
+        dono: "Público — Judiciário"
+      },
+      {
+        nome: "TV Escola",
+        url:  "http://liveabr2.sambatech.com.br/abr/acerpTvEscolaABR_1f9a5d00db56b3c3020b6ac3dd693e12/livestream.m3u8",
+        capa: "https://picsum.photos/seed/tvescola/400/300",
+        dono: "Público — Educação"
+      },
+      {
+        nome: "TV Cultura SP",
+        url:  "https://player-tvcultura.stream.uol.com.br/live/tvcultura.m3u8",
+        capa: "https://picsum.photos/seed/tvcultura/400/300",
+        dono: "Público — Cultura"
+      }
     ],
-    "Globo":[],"SBT":[],"Band":[],"Record":[],"Notícias":[],"Abertos":[],"Religiosos":[],"Outros":[]
+    "Importados": []
   },
-  filmes:   { "Ação": [], "Comédia": [], "Drama": [], "Lançamentos": [] },
+  filmes: {
+    "🎬 Domínio Público": [
+      {
+        nome: "Nosferatu (1922)",
+        url:  "https://archive.org/download/nosferatu_1922/nosferatu_1922_512kb.mp4",
+        capa: "https://picsum.photos/seed/nosferatu/400/300",
+        dono: "Terror — Clássico"
+      },
+      {
+        nome: "Metropolis (1927)",
+        url:  "https://archive.org/download/metropolis-1927-vose/metropolis-1927-vose_512kb.mp4",
+        capa: "https://picsum.photos/seed/metropolis/400/300",
+        dono: "Ficção Científica — Clássico"
+      },
+      {
+        nome: "A Noite dos Mortos-Vivos (1968)",
+        url:  "https://archive.org/download/night_of_the_living_dead/night_of_the_living_dead_512kb.mp4",
+        capa: "https://picsum.photos/seed/nightdead/400/300",
+        dono: "Terror — Clássico"
+      },
+      {
+        nome: "O Gabinete do Dr. Caligari (1920)",
+        url:  "https://archive.org/download/TheCabinetOfDrCaligari/TheCabinetOfDrCaligari_512kb.mp4",
+        capa: "https://picsum.photos/seed/caligari/400/300",
+        dono: "Terror — Expressionismo Alemão"
+      },
+      {
+        nome: "Os 39 Degraus (1935)",
+        url:  "https://archive.org/download/The39Steps/The39Steps_512kb.mp4",
+        capa: "https://picsum.photos/seed/39steps/400/300",
+        dono: "Suspense — Hitchcock"
+      },
+      {
+        nome: "A Star is Born (1937)",
+        url:  "https://archive.org/download/AStarIsBorn1937/AStarIsBorn1937_512kb.mp4",
+        capa: "https://picsum.photos/seed/astarisborn/400/300",
+        dono: "Drama — Clássico"
+      },
+      {
+        nome: "My Man Godfrey (1936)",
+        url:  "https://archive.org/download/MyManGodfrey/MyManGodfrey_512kb.mp4",
+        capa: "https://picsum.photos/seed/godfrey/400/300",
+        dono: "Comédia — Clássico"
+      },
+      {
+        nome: "Plan 9 from Outer Space (1959)",
+        url:  "https://archive.org/download/Plan9FromOuterSpace_201708/Plan9FromOuterSpace_512kb.mp4",
+        capa: "https://picsum.photos/seed/plan9/400/300",
+        dono: "Ficção Científica — Cult"
+      },
+      {
+        nome: "O Morro dos Ventos Uivantes (1939)",
+        url:  "https://archive.org/download/WutheringHeights1939/WutheringHeights1939_512kb.mp4",
+        capa: "https://picsum.photos/seed/wuthering/400/300",
+        dono: "Romance — Clássico"
+      },
+      {
+        nome: "A General (1926)",
+        url:  "https://archive.org/download/Buster_Keaton_The_General/TheGeneral_512kb.mp4",
+        capa: "https://picsum.photos/seed/general/400/300",
+        dono: "Comédia — Buster Keaton"
+      }
+    ]
+  },
   series:   { "Temporada 1": [], "Temporada 2": [] },
   jogos:    { "Gameplay": [] },
-  desenhos: { "Infantil": [] }
+  desenhos: {
+    "🎨 Infantil": [
+      {
+        nome: "TV Cultura Infantil",
+        url:  "https://player-tvcultura.stream.uol.com.br/live/tvcultura.m3u8",
+        capa: "https://picsum.photos/seed/culturainfantil/400/300",
+        dono: "Público — Infantil"
+      },
+      {
+        nome: "TV Escola Infantil",
+        url:  "http://liveabr2.sambatech.com.br/abr/acerpTvEscolaABR_1f9a5d00db56b3c3020b6ac3dd693e12/livestream.m3u8",
+        capa: "https://picsum.photos/seed/escolainfantil/400/300",
+        dono: "Público — Educação Infantil"
+      }
+    ]
+  }
 };
 
 const LANCAMENTOS = [
   { nome:"TV Nova Juarez — Ao Vivo", imagem:"https://i.postimg.cc/nhWqywPS/lv-0-20260616101447.png" },
   { nome:"Ninja Host",                imagem:"https://i.postimg.cc/286QDjJX/Screenshot-20260920-143249.jpg" },
-  { nome:"Estreia Exclusiva",         imagem:"https://picsum.photos/seed/unitv3/1600/900" }
+  { nome:"Nosferatu (1922)",          imagem:"https://picsum.photos/seed/nosferatu/1600/900" }
 ];
 
 const NOMES={canaisweb:"Canais Web",canais:"Canais",filmes:"Filmes",series:"Séries",jogos:"Jogos",desenhos:"Desenhos",__favs__:"⭐ Favoritos"};
@@ -601,7 +705,7 @@ document.getElementById('fecharPlayer').onclick=(e)=>{
 
 document.querySelectorAll('.quadro').forEach(q=>{q.onclick=()=>abrirPasta(q.dataset.pasta);});
 
-/* ============ FORMATOS DE TELA ============ */
+/* FORMATOS DE TELA */
 document.querySelectorAll('.fmtBtn').forEach(b=>{
   b.onclick=(e)=>{
     e.stopPropagation();
@@ -612,11 +716,19 @@ document.querySelectorAll('.fmtBtn').forEach(b=>{
   };
 });
 
-/* ============ COMPARTILHAR ============ */
-function linkAtual(){
-  if(!itemAtual) return '';
-  return itemAtual.url || '';
+/* GIRO AUTOMÁTICO DE TELA */
+function ajustarOrientacao(){
+  const paisagem = window.innerWidth > window.innerHeight;
+  if(document.body.classList.contains('modo-celular') && paisagem){
+    frame.dataset.forma='youtube';
+  }
 }
+window.addEventListener('resize', ajustarOrientacao);
+window.addEventListener('orientationchange', ()=>setTimeout(ajustarOrientacao,300));
+ajustarOrientacao();
+
+/* COMPARTILHAR */
+function linkAtual(){ return itemAtual ? (itemAtual.url || '') : ''; }
 function textoShare(){
   if(!itemAtual) return 'Unitv — TV Nova Juarez';
   return `📺 ${itemAtual.nome} — assistindo no Unitv (TV Nova Juarez)\n${itemAtual.url}`;
@@ -640,10 +752,10 @@ document.getElementById('shCopy').onclick=async (e)=>{ e.stopPropagation();
   try{
     if(navigator.share){ await navigator.share({title:itemAtual?itemAtual.nome:'Unitv', text:'Unitv — TV Nova Juarez', url:linkAtual()}); }
     else { await navigator.clipboard.writeText(textoShare()); alert('Link copiado!'); }
-  }catch(err){ /* usuário cancelou */ }
+  }catch(err){}
 };
 
-/* ============ BUSCA ============ */
+/* BUSCA */
 buscaInput.addEventListener('input',()=>{
   const q=buscaInput.value.trim().toLowerCase();
   if(!q){ gradeEl.innerHTML=''; pastaSec.classList.remove('show'); home.style.display='block'; return; }
@@ -668,7 +780,7 @@ buscaInput.addEventListener('input',()=>{
   });
 });
 
-/* ============ M3U ============ */
+/* M3U */
 document.getElementById('btnM3U').onclick=()=>modal.classList.add('show');
 document.getElementById('m3uCancel').onclick=()=>{modal.classList.remove('show');m3uTexto.value='';};
 document.getElementById('m3uOk').onclick=()=>{
